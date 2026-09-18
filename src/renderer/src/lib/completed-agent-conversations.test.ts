@@ -43,6 +43,37 @@ function scenario() {
 }
 
 describe('completed conversations projection', () => {
+  it('keeps labels unique when a title already has a numeric suffix', () => {
+    const { store, worktree, tab, entry, select } = scenario()
+    const tabs = [
+      { ...tab, id: 'tab-a' },
+      { ...tab, id: 'tab-b' },
+      { ...tab, id: 'tab-c' }
+    ]
+    const prompts = ['A', 'A', 'A (1)']
+    const entries = Object.fromEntries(
+      tabs.map((item, index) => {
+        const paneKey = makePaneKey(item.id, '11111111-1111-4111-8111-111111111111')
+        return [
+          paneKey,
+          {
+            ...entry,
+            paneKey,
+            tabId: item.id,
+            prompt: prompts[index],
+            stateStartedAt: 1000 + index
+          }
+        ]
+      })
+    )
+    store.setState({
+      tabsByWorktree: { [worktree.id]: tabs },
+      agentStatusByPaneKey: entries
+    })
+    const labels = select(store.getState()).entries.map((item) => item.label)
+    expect(new Set(labels).size).toBe(labels.length)
+  })
+
   it('keeps all conversations, independent of Activity filters and the 80-event cap', () => {
     const { store, worktree, tab, entry, select } = scenario()
     const tabs = Array.from({ length: 105 }, (_, index) => ({ ...tab, id: `tab-${index}` }))

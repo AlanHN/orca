@@ -121,17 +121,19 @@ export function createCompletedConversationsSelector(): (state: AppState) => {
         )
       return { id, label: Array.from(label).slice(0, 110).join('') }
     })
-    const counts = new Map<string, number>()
-    for (const entry of entries) {
-      counts.set(entry.label, (counts.get(entry.label) ?? 0) + 1)
-    }
+    const usedLabels = new Set<string>()
     const positions = new Map<string, number>()
     for (const entry of entries) {
-      if ((counts.get(entry.label) ?? 0) > 1) {
-        const position = (positions.get(entry.label) ?? 0) + 1
-        positions.set(entry.label, position)
-        entry.label += ` (${position})`
+      const baseLabel = entry.label
+      let candidate = baseLabel
+      let position = positions.get(baseLabel) ?? 0
+      while (usedLabels.has(candidate)) {
+        position += 1
+        candidate = `${baseLabel} (${position})`
       }
+      positions.set(baseLabel, position)
+      entry.label = candidate
+      usedLabels.add(candidate)
     }
     result = {
       entries:

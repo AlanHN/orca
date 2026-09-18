@@ -5,7 +5,11 @@ import { activateActivityThreadTarget } from '@/components/activity/activity-thr
 
 export function useCompletedConversationsDockMenu(): void {
   useEffect(() => {
-    if (!navigator.userAgent.includes('Mac') || !window.api?.app?.setDockCompletedConversations) {
+    if (
+      !navigator.userAgent.includes('Mac') ||
+      !window.api?.app?.setDockCompletedConversations ||
+      !window.api?.app?.onOpenDockCompletedConversation
+    ) {
       return
     }
     const select = createCompletedConversationsSelector()

@@ -5,10 +5,15 @@ export type DockCompletedConversation = {
 
 export const DOCK_CONVERSATIONS_UPDATE = 'app:setDockCompletedConversations'
 export const DOCK_CONVERSATION_OPEN = 'app:openDockCompletedConversation'
+// Keep renderer-controlled menu updates bounded in the main process.
+export const MAX_DOCK_COMPLETED_CONVERSATIONS = 200
 
 export function readDockCompletedConversations(value: unknown): DockCompletedConversation[] {
   if (!Array.isArray(value)) {
     throw new Error('Invalid Dock conversations')
+  }
+  if (value.length > MAX_DOCK_COMPLETED_CONVERSATIONS) {
+    throw new Error('Too many Dock conversations')
   }
   const ids = new Set<string>()
   return value.map((item: unknown) => {

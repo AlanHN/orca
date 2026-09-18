@@ -71,7 +71,8 @@ describe('completed conversations Dock menu', () => {
       [
         { id: 'x', label: 'a' },
         { id: 'x', label: 'b' }
-      ]
+      ],
+      Array.from({ length: 201 }, (_, index) => ({ id: String(index), label: 'a' }))
     ]) {
       expect(() => readDockCompletedConversations(input)).toThrow()
     }

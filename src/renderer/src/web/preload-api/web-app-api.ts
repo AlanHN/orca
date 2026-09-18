@@ -1,15 +1,12 @@
-import type { PreloadApi } from '../../../../preload/api-types'
 import { sanitizeWebRuntimeWorkspaceSession } from '../web-workspace-session'
 import { sessionStorageKeyForHost } from './web-workspace-session-api'
 import { mergeWebUIState } from './web-preference-normalization'
 import { readLocalWebUIState } from './web-preferences-store'
 import { UI_STORAGE_KEY, writeJson } from './web-storage'
 
-export function createWebAppApi(): Partial<PreloadApi> {
+export function createWebAppApi() {
   return {
     app: {
-      setDockCompletedConversations: () => Promise.resolve(),
-      onOpenDockCompletedConversation: () => () => {},
       getIdentity: () =>
         Promise.resolve({
           name: 'Orca',

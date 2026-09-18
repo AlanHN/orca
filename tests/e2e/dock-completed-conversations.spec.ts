@@ -6,11 +6,12 @@ import {
   waitForPaneIdentitySnapshot
 } from './helpers/terminal'
 
+test.skip(process.platform !== 'darwin', 'macOS Dock only')
+
 test('Dock menu opens a completed conversation and preserves its unread sibling', async ({
   electronApp,
   orcaPage
 }, testInfo) => {
-  test.skip(process.platform !== 'darwin', 'macOS Dock only')
   await waitForSessionReady(orcaPage)
   await waitForActiveWorktree(orcaPage)
   await orcaPage.evaluate(() => window.__store!.getState().updateSettings({ uiLanguage: 'en' }))
@@ -94,7 +95,6 @@ test('Dock menu opens a completed conversation and preserves its unread sibling'
 })
 
 test('Dock menu focuses the exact completed terminal split', async ({ electronApp, orcaPage }) => {
-  test.skip(process.platform !== 'darwin', 'macOS Dock only')
   await waitForSessionReady(orcaPage)
   await waitForActiveWorktree(orcaPage)
   await orcaPage.evaluate(() => window.__store!.getState().updateSettings({ uiLanguage: 'en' }))
