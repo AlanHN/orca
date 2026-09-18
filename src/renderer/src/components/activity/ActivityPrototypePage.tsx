@@ -38,7 +38,8 @@ export default function ActivityPrototypePage(): React.JSX.Element {
   const setCompactMode = useAppStore((s) => s.setAgentsCompactMode)
   const showChildAgents = useAppStore((s) => s.agentsShowChildAgents)
   const setShowChildAgents = useAppStore((s) => s.setAgentsShowChildAgents)
-  const [selectedPaneKey, setSelectedPaneKey] = useState<string | null>(null)
+  const selectedPaneKey = useAppStore((s) => s.selectedActivityPaneKey)
+  const setSelectedPaneKey = useAppStore((s) => s.setSelectedActivityPaneKey)
   const [displayedPaneKey, setDisplayedPaneKey] = useState<string | null>(null)
   const [activePortalSlotId, setActivePortalSlotId] =
     useState<ActivityTerminalPortalSlotId>('primary')

@@ -8,6 +8,8 @@ import { UI_STORAGE_KEY, writeJson } from './web-storage'
 export function createWebAppApi(): Partial<PreloadApi> {
   return {
     app: {
+      setDockCompletedConversations: () => Promise.resolve(),
+      onOpenDockCompletedConversation: () => () => {},
       getIdentity: () =>
         Promise.resolve({
           name: 'Orca',
