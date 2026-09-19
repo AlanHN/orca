@@ -14,7 +14,10 @@ import {
   getSettingsFocusedExecutionHostId,
   getWorktreeExecutionHostId
 } from '../../../shared/execution-host'
-import type { DockCompletedConversation } from '../../../shared/dock-completed-conversations'
+import {
+  MAX_DOCK_COMPLETED_CONVERSATIONS,
+  type DockCompletedConversation
+} from '../../../shared/dock-completed-conversations'
 
 export function completedConversationId(thread: AgentPaneThread, state: AppState): string {
   return JSON.stringify([
@@ -105,7 +108,7 @@ export function createCompletedConversationsSelector(): (state: AppState) => {
       )
       .sort((a, b) => b.latestTimestamp - a.latestTimestamp || a.paneKey.localeCompare(b.paneKey))
     const targets = new Map<string, AgentPaneThread>()
-    const entries = threads.map((thread) => {
+    const entries = threads.slice(0, MAX_DOCK_COMPLETED_CONVERSATIONS).map((thread) => {
       const id = completedConversationId(thread, state)
       targets.set(id, thread)
       const hostId = getWorktreeExecutionHostId(

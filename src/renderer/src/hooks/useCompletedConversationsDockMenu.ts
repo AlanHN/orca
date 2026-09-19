@@ -7,6 +7,7 @@ export function useCompletedConversationsDockMenu(): void {
   useEffect(() => {
     if (
       !navigator.userAgent.includes('Mac') ||
+      window.__ORCA_WEB_CLIENT__ ||
       !window.api?.app?.setDockCompletedConversations ||
       !window.api?.app?.onOpenDockCompletedConversation
     ) {

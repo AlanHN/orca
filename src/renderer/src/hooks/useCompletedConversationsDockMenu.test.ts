@@ -53,17 +53,23 @@ describe('Dock conversation synchronization and navigation', () => {
     mocks.select.mockReturnValue({ entries, threads: new Map([['turn-1', thread]]) })
     mocks.activate.mockReturnValue(true)
   })
-  afterEach(() => vi.unstubAllGlobals())
+  afterEach(() => {
+    delete window.__ORCA_WEB_CLIENT__
+    vi.unstubAllGlobals()
+  })
 
   it('coalesces updates, preserves snapshots and releases every subscription', async () => {
     const hook = renderHook(useCompletedConversationsDockMenu)
     expect(mocks.setMenu).toHaveBeenCalledWith(entries)
     const changed = mocks.subscribe.mock.calls[0][0]
+    const finalEntries = [{ id: 'turn-2', label: 'Workspace — Final task' }]
+    mocks.select.mockReturnValueOnce({ entries: finalEntries, threads: new Map() })
     await act(async () => {
       changed()
       changed()
     })
-    expect(mocks.setMenu).toHaveBeenCalledTimes(1)
+    expect(mocks.setMenu).toHaveBeenCalledTimes(2)
+    expect(mocks.setMenu).toHaveBeenLastCalledWith(finalEntries)
     mocks.select.mockReturnValue({ entries: [], threads: new Map() })
     await act(async () => {
       changed()
@@ -98,6 +104,14 @@ describe('Dock conversation synchronization and navigation', () => {
 
   it.each(['Windows', 'Linux'])('does not subscribe on %s', (userAgent) => {
     vi.stubGlobal('navigator', { userAgent })
+    const hook = renderHook(useCompletedConversationsDockMenu)
+    expect(mocks.subscribe).not.toHaveBeenCalled()
+    expect(mocks.setMenu).not.toHaveBeenCalled()
+    hook.unmount()
+  })
+
+  it('does not subscribe in the web client on macOS', () => {
+    window.__ORCA_WEB_CLIENT__ = true
     const hook = renderHook(useCompletedConversationsDockMenu)
     expect(mocks.subscribe).not.toHaveBeenCalled()
     expect(mocks.setMenu).not.toHaveBeenCalled()

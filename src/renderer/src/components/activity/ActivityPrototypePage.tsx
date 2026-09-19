@@ -40,18 +40,14 @@ export default function ActivityPrototypePage(): React.JSX.Element {
   const setShowChildAgents = useAppStore((s) => s.setAgentsShowChildAgents)
   const selectedPaneKey = useAppStore((s) => s.selectedActivityPaneKey)
   const setSelectedPaneKey = useAppStore((s) => s.setSelectedActivityPaneKey)
-  const activeWorktreeId = useAppStore((s) => s.activeWorktreeId)
   const agentsVisibleHostIds = useAppStore((s) => s.agentsVisibleHostIds)
   const agentsFilterRepoIds = useAppStore((s) => s.agentsFilterRepoIds)
-  const activityScopeKey = JSON.stringify([
-    activeWorktreeId,
-    agentsVisibleHostIds,
-    agentsFilterRepoIds
-  ])
-  const previousActivityScopeKeyRef = useRef(activityScopeKey)
-  const activityScopeChanged = previousActivityScopeKeyRef.current !== activityScopeKey
+  const activityScopeKey = JSON.stringify([agentsVisibleHostIds, agentsFilterRepoIds])
+  const [previousActivityScopeKey, setPreviousActivityScopeKey] = useState(activityScopeKey)
+  const activityScopeChanged = previousActivityScopeKey !== activityScopeKey
   if (activityScopeChanged) {
-    previousActivityScopeKeyRef.current = activityScopeKey
+    setPreviousActivityScopeKey(activityScopeKey)
+    setSelectedPaneKey(null)
   }
   const selectedPaneKeyForThreads = activityScopeChanged ? null : selectedPaneKey
   const [displayedPaneKey, setDisplayedPaneKey] = useState<string | null>(null)
@@ -93,12 +89,6 @@ export default function ActivityPrototypePage(): React.JSX.Element {
     // Why: rows disappear when agent retention or tab state changes; clear stale selection before detail/portal rendering targets it.
     setSelectedPaneKey(null)
   }
-
-  useEffect(() => {
-    if (activityScopeChanged) {
-      setSelectedPaneKey(null)
-    }
-  }, [activityScopeChanged, setSelectedPaneKey])
 
   useEffect(() => () => setSelectedPaneKey(null), [setSelectedPaneKey])
 

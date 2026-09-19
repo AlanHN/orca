@@ -4,7 +4,7 @@ import { mergeWebUIState } from './web-preference-normalization'
 import { readLocalWebUIState } from './web-preferences-store'
 import { UI_STORAGE_KEY, writeJson } from './web-storage'
 
-export function createWebAppApi() {
+export function createWebAppApi(): { app: Partial<AppApi> } {
   return {
     app: {
       getIdentity: () =>
@@ -54,3 +54,4 @@ export function createWebAppApi() {
     }
   }
 }
+import type { AppApi } from '../../../../preload/api/app-api'

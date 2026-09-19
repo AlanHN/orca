@@ -71,6 +71,7 @@ describe('completed conversations projection', () => {
       agentStatusByPaneKey: entries
     })
     const labels = select(store.getState()).entries.map((item) => item.label)
+    expect(labels).toHaveLength(3)
     expect(new Set(labels).size).toBe(labels.length)
   })
 
@@ -92,6 +93,24 @@ describe('completed conversations projection', () => {
     expect(projected.entries).toHaveLength(105)
     expect([...projected.threads.values()][0].latestTimestamp).toBe(1104)
     expect(new Set(projected.entries.map((item) => item.id)).size).toBe(105)
+  })
+
+  it('caps Dock entries without dropping the newest conversations', () => {
+    const { store, worktree, tab, entry, select } = scenario()
+    const tabs = Array.from({ length: 201 }, (_, index) => ({ ...tab, id: `tab-${index}` }))
+    const entries = Object.fromEntries(
+      tabs.map((item, index) => {
+        const paneKey = makePaneKey(item.id, '11111111-1111-4111-8111-111111111111')
+        return [paneKey, { ...entry, paneKey, stateStartedAt: 1000 + index }]
+      })
+    )
+    store.setState({
+      tabsByWorktree: { [worktree.id]: tabs },
+      agentStatusByPaneKey: entries
+    })
+    const projected = select(store.getState())
+    expect(projected.entries).toHaveLength(200)
+    expect([...projected.threads.values()][0].latestTimestamp).toBe(1200)
   })
 
   it('removes acknowledged turns and rejects old menu identities after another completion', () => {
